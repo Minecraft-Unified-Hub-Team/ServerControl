@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "./internal/api";
+
+message StartRequest {}
+message StartResponse {}
+
+service ActionService {
+    rpc Start(StartRequest) returns (StartResponse) {}
+}
