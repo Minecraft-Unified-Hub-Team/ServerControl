@@ -2,15 +2,23 @@ syntax = "proto3";
 
 option go_package = "./internal/api";
 
+/* Action */
 message StartRequest {}
 message StartResponse {}
 
-service Action {
-    rpc Start(StartRequest) returns (StartResponse) {}
-}
+message StopRequest {}
+message StopResponce {}
 
+/* Health */
 message PingRequest {}
 message PingResponse {}
+
+
+/* Services */
+service Action {
+    rpc Start(StartRequest) returns (StartResponse) {}
+    rpc Stop(StopRequest) returns (StopResponce) {}
+}
 
 service Health {
     rpc Ping(PingRequest) returns (PingResponse) {}
