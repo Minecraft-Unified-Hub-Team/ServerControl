@@ -1,0 +1,29 @@
+name: Go
+
+on:
+  push:
+    branches: [ "main", "dev", "dev-noname0443", "test", "dev-ch1nn1y" ]
+  pull_request:
+    branches: [ "main", "dev", "dev-noname0443", "test", "dev-ch1nn1y" ]
+
+jobs:
+  unit_tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23'
+    - name: Test
+      run: make unit-tests
+  integration_tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23'
+    - name: Test
+      run: make integration-tests

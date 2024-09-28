@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  server_control:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    hostname: server_control
+    ports:
+      - "10080:10080"
