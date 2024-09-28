@@ -1,14 +1,14 @@
 package server_control
 
 import (
-	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/action"
+	"context"
+
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/api"
-	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/health"
 )
 
 func NewServerControlHandler(
-	actionService action.ActionInterface,
-	healthService health.HealthInterface,
+	actionService ActionInterface,
+	healthService HealthInterface,
 ) (*ServerControlHandler, error) {
 	return &ServerControlHandler{
 		actionService: actionService,
@@ -16,10 +16,21 @@ func NewServerControlHandler(
 	}, nil
 }
 
-type ServerControlHandler struct {
-	api.UnimplementedActionServer
-	api.UnimplementedHealthServer
+type (
+	ServerControlHandler struct {
+		api.UnimplementedActionServer
+		api.UnimplementedHealthServer
 
-	actionService action.ActionInterface
-	healthService health.HealthInterface
-}
+		actionService ActionInterface
+		healthService HealthInterface
+	}
+
+	ActionInterface interface {
+		Start(context.Context) error
+		Stop(context.Context) error
+	}
+
+	HealthInterface interface {
+		GetState(context.Context) error
+	}
+)
