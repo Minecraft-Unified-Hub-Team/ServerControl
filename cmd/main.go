@@ -5,9 +5,10 @@ import (
 	"net"
 	"os"
 
+	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/action"
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/api"
-	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/app"
-	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/impl"
+	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/health"
+	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/server_control"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -36,7 +37,12 @@ func main() {
 	}
 
 	logrus.Info("service control init")
-	actionService, err := app.NewActionService()
+	actionService, err := action.NewActionService()
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	healthService, err := health.NewActionService()
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -44,11 +50,12 @@ func main() {
 	logrus.Info("grpc init")
 	grpcServer := grpc.NewServer()
 
-	serviceControlHandler, err := impl.NewServiceControlHandler(actionService)
+	serviceControlHandler, err := server_control.NewServerControlHandler(actionService, healthService)
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	api.RegisterActionServiceServer(grpcServer, serviceControlHandler)
+	api.RegisterActionServer(grpcServer, serviceControlHandler)
+	api.RegisterHealthServer(grpcServer, serviceControlHandler)
 	reflection.Register(grpcServer)
 
 	logrus.Info("server init")

@@ -35,16 +35,17 @@ func TestFeatures(t *testing.T) {
 	t.Cleanup(func() {
 		fm.StepCleanup(context.Background())
 	})
-
 	if suite.Run() != 0 {
 		logrus.Info("non-zero status returned, failed to run feature tests")
 	}
 }
 
 func InitializeScenario(fm *FeatureManager, sc *godog.ScenarioContext) {
-	sc.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
-		return ctx, nil
-	})
-	sc.Step(`^I connect to service control$`, fm.StepIConnectToServiceControl)
-	sc.Step(`^I start server$`, fm.StepIStartServer)
+	sc.Step(`^I connect to service control$`, fm.iConnectToServiceControl)
+	sc.Step(`^I start server$`, fm.iStartServer)
+
+	sc.Step(`^I ping to the server$`, fm.iPingToTheServer)
+
+	sc.Step(`^I have an error$`, fm.iHaveAnError)
+	sc.Step(`^I have no errors$`, fm.iHaveNoErrors)
 }

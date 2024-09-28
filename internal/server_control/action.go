@@ -1,4 +1,4 @@
-package impl
+package server_control
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (sch *ServiceControlHandler) Start(ctx context.Context, req *api.StartRequest) (*api.StartResponse, error) {
+func (sch *ServerControlHandler) Start(ctx context.Context, req *api.StartRequest) (*api.StartResponse, error) {
 	logrus.Debug(req)
 
 	err := sch.actionService.Start(context.Background())

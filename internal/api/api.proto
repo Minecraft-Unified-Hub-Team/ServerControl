@@ -5,6 +5,13 @@ option go_package = "./internal/api";
 message StartRequest {}
 message StartResponse {}
 
-service ActionService {
+service Action {
     rpc Start(StartRequest) returns (StartResponse) {}
+}
+
+message PingRequest {}
+message PingResponse {}
+
+service Health {
+    rpc Ping(PingRequest) returns (PingResponse) {}
 }
