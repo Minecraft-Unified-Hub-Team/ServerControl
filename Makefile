@@ -4,10 +4,13 @@ proto:
 run:
 	go run cmd/cmd.go
 
-integration-tests:
+integration-tests: proto
 	docker compose up --wait -d --build
 	cd tests
 	go test ./... -count=1
 
 unit-tests:
 	echo "Done"
+
+cleanup:
+	docker compose down
