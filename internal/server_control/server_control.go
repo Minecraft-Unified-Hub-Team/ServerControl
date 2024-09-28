@@ -32,5 +32,6 @@ type (
 
 	HealthInterface interface {
 		GetState(context.Context) error
+		Ping(context.Context) error
 	}
 )
