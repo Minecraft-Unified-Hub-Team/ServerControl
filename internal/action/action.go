@@ -26,6 +26,11 @@ type ActionService struct {
 }
 
 func (as *ActionService) Start(ctx context.Context) error {
+	/* check that server has not been already started */
+	if as.State.IsAlive() {
+		return fmt.Errorf("server has been already started") // TODO verify that we use fmt.Errorf for creating errors
+	}
+
 	/* create aliveness context for server run */
 	as.AliveCtx, as.stopCtx = context.WithCancel(context.Background())
 
@@ -39,12 +44,12 @@ func (as *ActionService) Start(ctx context.Context) error {
 
 	/* start server in goroutine */
 	go func() {
-		as.State = mine_state.Alive
+		as.State.Set(mine_state.Alive)
 		status, _ := mine_os.ManagedExecCtx(as.AliveCtx, command, args)
 		if status == 1 {
-			as.State = mine_state.Stopped
+			as.State.Set(mine_state.Stopped)
 		} else {
-			as.State = mine_state.Dead
+			as.State.Set(mine_state.Dead)
 		}
 	}()
 
