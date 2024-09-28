@@ -1,17 +1,25 @@
 package mine_state
 
-import "sync"
-
-type State struct {
-	value int
-	mutex sync.Mutex
-}
+import (
+	"sync"
+)
 
 const (
 	Alive   = 0
 	Stopped = 1
 	Dead    = 2
 )
+
+type State struct {
+	value int
+	mutex sync.Mutex
+}
+
+func NewState(state int) (*State, error) {
+	return &State{
+		value: Stopped,
+	}, nil
+}
 
 func (s *State) IsAlive() bool {
 	s.mutex.Lock()
