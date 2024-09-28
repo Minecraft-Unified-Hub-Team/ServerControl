@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/api"
+	"github.com/Minecraft-Unified-Hub-Team/ServerControl/utils/mine_state"
 )
 
 func NewServerControlHandler(
@@ -31,7 +32,7 @@ type (
 	}
 
 	HealthInterface interface {
-		GetState(context.Context) error
+		GetState(context.Context) (mine_state.State, error)
 		Ping(context.Context) error
 	}
 )

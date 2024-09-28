@@ -42,7 +42,7 @@ func main() {
 		logrus.Fatal(err)
 	}
 
-	healthService, err := health.NewActionService()
+	healthService, err := health.NewHealthService()
 	if err != nil {
 		logrus.Fatal(err)
 	}
