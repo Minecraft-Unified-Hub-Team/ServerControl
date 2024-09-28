@@ -7,7 +7,7 @@ message StartRequest {}
 message StartResponse {}
 
 message StopRequest {}
-message StopResponce {}
+message StopResponse {}
 
 /* Health */
 message PingRequest {}
@@ -17,7 +17,7 @@ message PingResponse {}
 /* Services */
 service Action {
     rpc Start(StartRequest) returns (StartResponse) {}
-    rpc Stop(StopRequest) returns (StopResponce) {}
+    rpc Stop(StopRequest) returns (StopResponse) {}
 }
 
 service Health {
