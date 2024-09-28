@@ -15,4 +15,7 @@ WORKDIR /build
 
 COPY --from=builder /build/app /control/server_control
 
+RUN mkdir -p /server
+RUN apk update && apk add --no-cache openjdk21 bash
+
 CMD ["/control/server_control"]

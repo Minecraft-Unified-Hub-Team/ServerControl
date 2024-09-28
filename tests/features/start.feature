@@ -7,6 +7,10 @@ Feature: Start server
         And I ping to the server
         Then I have no errors
 
+    Scenario: I can install server
+        When I install server
+        Then I have no errors
+
     Scenario: I can start server
         When I start server
         Then I have no errors

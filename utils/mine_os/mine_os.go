@@ -2,26 +2,32 @@ package mine_os
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 	"syscall"
 )
 
-// ManagedExecCtx function
-// Desc:
-//
-//	implements upgraded exec command with custom context support
-//	and managing child processes (kill them if main process died)
-//
-// Return:
-//
-//	(status, error) - if error happens returns error
-//	and status:
-//	-1 - unexpected error (during start),
-//	0 - expected error (during execution),
-//	1 - no errors
-func ManagedExecCtx(ctx context.Context, command string, args []string) (status int, err error) {
-	/* init status variable with value 1 (OK) and err with value nil */
-	status, err = 1, nil
+func ExecCtx(ctx context.Context, command string, args []string) error {
+	var err error = nil
+	var errorFormat string = fmt.Sprintf("mine_os.ExecCtx(ctx, %s, %v):", command, args) + ": %w"
+
+	/* init command with context */
+	cmd := exec.CommandContext(ctx, command, args...)
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+
+	/* run command */
+	err = cmd.Run()
+	if err != nil {
+		return fmt.Errorf(errorFormat, err)
+	}
+
+	return err
+}
+
+func ManagedExecCtx(ctx context.Context, command string, args []string) (int, error) {
+	var status int = 1
+	var err error = nil
+	var errorFormat string = fmt.Sprintf("mine_os.ManagedExecCtx(ctx, %s, %v)", command, args) + ": %w"
 
 	/* init managed process cmd */
 	cmd := exec.CommandContext(ctx, command, args...)
@@ -34,7 +40,7 @@ func ManagedExecCtx(ctx context.Context, command string, args []string) (status 
 	err = cmd.Start()
 	if err != nil {
 		status = -1 /* error equal to start failed (uncommon error) */
-		return
+		return status, fmt.Errorf(errorFormat, err)
 	}
 
 	/* get group processes pid */
@@ -42,7 +48,7 @@ func ManagedExecCtx(ctx context.Context, command string, args []string) (status 
 	if err != nil {
 		status = -1                                          /* error equal to start failed (uncommon error) */
 		err = syscall.Kill(cmd.Process.Pid, syscall.SIGKILL) /* kill main process */
-		return
+		return status, fmt.Errorf(errorFormat, err)
 	}
 
 	/* start goroutine for killing child processes (triggered by termChan) */
@@ -59,24 +65,8 @@ func ManagedExecCtx(ctx context.Context, command string, args []string) (status 
 	default:
 		status = 0 /* error during execution (common error) */
 	}
+
 	/* trigger to stop child processes */
 	termChan <- struct{}{}
-	return
-}
-
-// ManagedExec function
-// Desc:
-//
-//	implements upgraded exec command with background context support
-//	and managing child processes (kill them if main process died)
-//
-// Return:
-//
-//	(status, error) - if error happens returns error
-//	and status:
-//	-1 - unexpected error (during start),
-//	0 - expected error (during execution),
-//	1 - no errors
-func ManagedExec(command string, args []string) (int, error) {
-	return ManagedExecCtx(context.Background(), command, args)
+	return status, fmt.Errorf(errorFormat, err)
 }

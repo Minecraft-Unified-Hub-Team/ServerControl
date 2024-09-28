@@ -13,9 +13,13 @@ func NewHealthService() (*HealthService, error) {
 type HealthService struct{}
 
 func (hs *HealthService) Ping(ctx context.Context) error {
-	return nil
+	var err error = nil
+
+	return err
 }
 
 func (hs *HealthService) GetState(ctx context.Context) (mine_state.State, error) {
-	return mine_state.State{}, nil
+	var err error = nil
+
+	return mine_state.State{}, err
 }

@@ -16,9 +16,11 @@ type State struct {
 }
 
 func NewState(state int) (*State, error) {
+	var err error = nil
+
 	return &State{
 		value: Stopped,
-	}, nil
+	}, err
 }
 
 func (s *State) IsAlive() bool {

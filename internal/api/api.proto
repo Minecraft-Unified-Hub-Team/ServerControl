@@ -9,6 +9,9 @@ message StartResponse {}
 message StopRequest {}
 message StopResponse {}
 
+message InstallRequest {string version = 1;}
+message InstallResponse {}
+
 /* Health */
 message PingRequest {}
 message PingResponse {}
@@ -18,6 +21,7 @@ message PingResponse {}
 service Action {
     rpc Start(StartRequest) returns (StartResponse) {}
     rpc Stop(StopRequest) returns (StopResponse) {}
+    rpc Install(InstallRequest) returns (InstallResponse) {}
 }
 
 service Health {

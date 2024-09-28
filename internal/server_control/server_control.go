@@ -29,6 +29,7 @@ type (
 	ActionInterface interface {
 		Start(context.Context) error
 		Stop(context.Context) error
+		Install(context.Context, string) error
 	}
 
 	HealthInterface interface {
