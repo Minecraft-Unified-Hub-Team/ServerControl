@@ -24,7 +24,7 @@ type ActionService struct {
 }
 
 func NewActionService() (*ActionService, error) {
-	currentState, _ := mine_state.NewState(mine_state.Stopped) // TODO set mine_state.Stopped here when install will be complited
+	currentState, _ := mine_state.NewState(mine_state.Stopped) // TODO set mine_state.Stopped here when install will be completed
 	return &ActionService{
 		State: currentState,
 	}, nil
