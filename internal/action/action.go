@@ -133,7 +133,7 @@ func (as *ActionService) Start(ctx context.Context) error {
 	}
 
 	/* create aliveness context for server run */
-	aliveCtx, as.stopCtx = context.WithCancel(context.Background())
+	aliveCtx, as.stopCtx := context.WithCancel(context.Background())
 
 	/* prepare command and arguments */
 	command := "/bin/bash"
