@@ -18,7 +18,8 @@ const (
 )
 
 type ActionService struct {
-	stopCtx context.CancelFunc // function that cancels server binary execution
+	aliveCtx context.Context    // context that continues until server is stopped or dead
+	stopCtx  context.CancelFunc // function that cancels server binary execution
 
 	State *mine_state.State // channel that stores state of server
 }
@@ -133,7 +134,7 @@ func (as *ActionService) Start(ctx context.Context) error {
 	}
 
 	/* create aliveness context for server run */
-	aliveCtx, as.stopCtx := context.WithCancel(context.Background())
+	as.aliveCtx, as.stopCtx = context.WithCancel(context.Background())
 
 	/* prepare command and arguments */
 	command := "/bin/bash"
@@ -147,7 +148,7 @@ func (as *ActionService) Start(ctx context.Context) error {
 	/* start server in goroutine */
 	go func() {
 		as.State.Set(mine_state.Alive)
-		status, err := mine_os.ManagedExecCtx(aliveCtx, command, args)
+		status, err := mine_os.ManagedExecCtx(as.aliveCtx, command, args)
 		logrus.Debugln("get error in start:", err)
 		if status == 1 {
 			as.State.Set(mine_state.Stopped)
