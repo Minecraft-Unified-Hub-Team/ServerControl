@@ -31,6 +31,15 @@ func (fm *FeatureManager) StepCleanup(ctx context.Context) (context.Context, err
 	return ctx, nil
 }
 
+func (fm *FeatureManager) iInstallServer(ctx context.Context, TestServerVersion string) (context.Context, error) {
+	_, err := fm.actionServiceClient.Install(context.Background(), &api.InstallRequest{Version: TestServerVersion})
+	if err != nil {
+		fm.lastError = err
+		return ctx, nil
+	}
+	return ctx, nil
+}
+
 func (fm *FeatureManager) iStartServer(ctx context.Context) (context.Context, error) {
 	_, err := fm.actionServiceClient.Start(context.Background(), &api.StartRequest{})
 	if err != nil {

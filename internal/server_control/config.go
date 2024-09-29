@@ -7,16 +7,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (sch *ServerControlHandler) Ping(ctx context.Context, req *api.PingRequest) (*api.PingResponse, error) {
+func (sch *ServerControlHandler) WriteSettings(ctx context.Context, req *api.WriteSettingsRequest) (*api.WriteSettingsResponse, error) {
 	var err error = nil
 
 	logrus.Debug(req)
 
-	err = sch.healthService.Ping(context.Background())
+	err = sch.configService.WriteSettings(context.Background())
 	if err != nil {
 		logrus.Debug(err)
 		return nil, err
 	}
 
-	return &api.PingResponse{}, err
+	return &api.WriteSettingsResponse{}, err
 }

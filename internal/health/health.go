@@ -2,18 +2,24 @@ package health
 
 import (
 	"context"
+
+	"github.com/Minecraft-Unified-Hub-Team/ServerControl/utils/mine_state"
 )
 
-type HealthInterface interface {
-	Ping(context.Context) error
-}
-
-func NewActionService() (*HealthService, error) {
+func NewHealthService() (*HealthService, error) {
 	return &HealthService{}, nil
 }
 
 type HealthService struct{}
 
 func (hs *HealthService) Ping(ctx context.Context) error {
-	return nil
+	var err error = nil
+
+	return err
+}
+
+func (hs *HealthService) GetState(ctx context.Context) (mine_state.State, error) {
+	var err error = nil
+
+	return mine_state.State{}, err
 }
