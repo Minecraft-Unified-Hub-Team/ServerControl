@@ -16,6 +16,10 @@ message InstallResponse {}
 message PingRequest {}
 message PingResponse {}
 
+/* Config */
+message WriteSettingsRequest {}
+message WriteSettingsResponse {}
+
 
 /* Services */
 service Action {
@@ -26,4 +30,8 @@ service Action {
 
 service Health {
     rpc Ping(PingRequest) returns (PingResponse) {}
+}
+
+service Config {
+    rpc WriteSettings(WriteSettingsRequest) returns (WriteSettingsResponse) {}
 }

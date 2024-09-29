@@ -46,5 +46,17 @@ func (sch *ServerControlHandler) Install(ctx context.Context, req *api.InstallRe
 		return nil, err
 	}
 
+	err = sch.configService.WriteEula(context.Background())
+	if err != nil {
+		logrus.Debug(err)
+		return nil, err
+	}
+
+	err = sch.configService.WriteJVM(context.Background())
+	if err != nil {
+		logrus.Debug(err)
+		return nil, err
+	}
+
 	return &api.InstallResponse{}, err
 }

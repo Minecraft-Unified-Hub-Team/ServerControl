@@ -7,6 +7,7 @@ import (
 
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/action"
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/api"
+	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/config"
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/health"
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/server_control"
 	"github.com/sirupsen/logrus"
@@ -47,15 +48,21 @@ func main() {
 		logrus.Fatal(err)
 	}
 
+	configService, err := config.NewConfigService()
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	logrus.Info("grpc init")
 	grpcServer := grpc.NewServer()
 
-	serviceControlHandler, err := server_control.NewServerControlHandler(actionService, healthService)
+	serviceControlHandler, err := server_control.NewServerControlHandler(actionService, healthService, configService)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 	api.RegisterActionServer(grpcServer, serviceControlHandler)
 	api.RegisterHealthServer(grpcServer, serviceControlHandler)
+	api.RegisterConfigServer(grpcServer, serviceControlHandler)
 	reflection.Register(grpcServer)
 
 	logrus.Info("server init")

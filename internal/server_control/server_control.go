@@ -10,10 +10,12 @@ import (
 func NewServerControlHandler(
 	actionService ActionInterface,
 	healthService HealthInterface,
+	configService ConfigInterface,
 ) (*ServerControlHandler, error) {
 	return &ServerControlHandler{
 		actionService: actionService,
 		healthService: healthService,
+		configService: configService,
 	}, nil
 }
 
@@ -21,9 +23,11 @@ type (
 	ServerControlHandler struct {
 		api.UnimplementedActionServer
 		api.UnimplementedHealthServer
+		api.UnimplementedConfigServer
 
 		actionService ActionInterface
 		healthService HealthInterface
+		configService ConfigInterface
 	}
 
 	ActionInterface interface {
@@ -35,5 +39,11 @@ type (
 	HealthInterface interface {
 		GetState(context.Context) (mine_state.State, error)
 		Ping(context.Context) error
+	}
+
+	ConfigInterface interface {
+		WriteEula(context.Context) error
+		WriteJVM(context.Context) error
+		WriteSettings(context.Context) error
 	}
 )

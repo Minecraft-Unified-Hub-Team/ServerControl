@@ -17,18 +17,18 @@ const (
 	installerName = "/forge-%s-installer.jar"
 )
 
-func NewActionService() (*ActionService, error) {
-	currentState, _ := mine_state.NewState(mine_state.Stopped) // TODO set mine_state.Stopped here when install will be complited
-	return &ActionService{
-		State: currentState,
-	}, nil
-}
-
 type ActionService struct {
 	AliveCtx context.Context    // context that continues until server is stopped or dead
 	stopCtx  context.CancelFunc // function that cancels server binary execution
 
 	State *mine_state.State // channel that stores state of server
+}
+
+func NewActionService() (*ActionService, error) {
+	currentState, _ := mine_state.NewState(mine_state.Stopped) // TODO set mine_state.Stopped here when install will be complited
+	return &ActionService{
+		State: currentState,
+	}, nil
 }
 
 func (as *ActionService) downloadJar(ctx context.Context, version string) error {
@@ -50,7 +50,7 @@ func (as *ActionService) downloadJar(ctx context.Context, version string) error 
 	/* dowload jar file */
 	err = mine_os.ExecCtx(ctx, command, args)
 	if err != nil {
-		return fmt.Errorf(errorFormat, command, args, err)
+		return fmt.Errorf(errorFormat, err)
 	}
 
 	return err
