@@ -13,8 +13,7 @@ import (
 )
 
 const (
-	PORT              = 10080
-	TestServerVersion = "1.20.6-50.1.3"
+	PORT = 10080
 )
 
 func NewFeatureManager() (*FeatureManager, error) {
@@ -32,7 +31,7 @@ func (fm *FeatureManager) StepCleanup(ctx context.Context) (context.Context, err
 	return ctx, nil
 }
 
-func (fm *FeatureManager) iInstallServer(ctx context.Context) (context.Context, error) {
+func (fm *FeatureManager) iInstallServer(ctx context.Context, TestServerVersion string) (context.Context, error) {
 	_, err := fm.actionServiceClient.Install(context.Background(), &api.InstallRequest{Version: TestServerVersion})
 	if err != nil {
 		fm.lastError = err

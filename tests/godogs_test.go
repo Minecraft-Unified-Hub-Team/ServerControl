@@ -42,7 +42,8 @@ func TestFeatures(t *testing.T) {
 
 func InitializeScenario(fm *FeatureManager, sc *godog.ScenarioContext) {
 	sc.Step(`^I connect to service control$`, fm.iConnectToServiceControl)
-	sc.Step(`^I install server$`, fm.iInstallServer)
+	sc.Step(`^I install "([^"]*)" server version$`, fm.iInstallServer)
+
 	sc.Step(`^I start server$`, fm.iStartServer)
 
 	sc.Step(`^I ping to the server$`, fm.iPingToTheServer)
