@@ -14,3 +14,7 @@ Feature: Start server
     Scenario: I can start server
         When I start server
         Then I have no errors
+
+    Scenario: Server has "alive" state
+        When I get server state "alive"
+        Then I have no errors

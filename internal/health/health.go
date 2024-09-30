@@ -18,8 +18,8 @@ func (hs *HealthService) Ping(ctx context.Context) error {
 	return err
 }
 
-func (hs *HealthService) GetState(ctx context.Context) (mine_state.State, error) {
+func (hs *HealthService) GetState(ctx context.Context, state *mine_state.State) (string, error) {
 	var err error = nil
 
-	return mine_state.State{}, err
+	return state.String(), err
 }

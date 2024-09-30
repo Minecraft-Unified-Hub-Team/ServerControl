@@ -49,6 +49,15 @@ func (fm *FeatureManager) iStartServer(ctx context.Context) (context.Context, er
 	return ctx, nil
 }
 
+func (fm *FeatureManager) iStopServer(ctx context.Context) (context.Context, error) {
+	_, err := fm.actionServiceClient.Stop(context.Background(), &api.StopRequest{})
+	if err != nil {
+		fm.lastError = err
+		return ctx, nil
+	}
+	return ctx, nil
+}
+
 func (fm *FeatureManager) iPingToTheServer(ctx context.Context) (context.Context, error) {
 	err := retry.Do(
 		func() error {
@@ -98,5 +107,18 @@ func (fm *FeatureManager) iConnectToServiceControl(ctx context.Context) (context
 	fm.actionServiceClient = api.NewActionClient(conn)
 	fm.healthServiceClient = api.NewHealthClient(conn)
 
+	return ctx, nil
+}
+
+func (fm *FeatureManager) iGetServerState(ctx context.Context, checkState string) (context.Context, error) {
+	resp, err := fm.healthServiceClient.GetState(ctx, &api.StateRequest{})
+	if err != nil {
+		fm.lastError = err
+		return ctx, fm.lastError
+	}
+	if checkState != resp.State {
+		fm.lastError = fmt.Errorf("get {%s} state, but {%s} state was expected", resp.State, checkState)
+		return ctx, fm.lastError
+	}
 	return ctx, nil
 }

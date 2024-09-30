@@ -46,3 +46,13 @@ func (s *State) Set(state int) {
 	defer s.mutex.Unlock()
 	s.value = state
 }
+
+func (s *State) String() string {
+	if s.IsAlive() {
+		return "alive"
+	} else if s.IsStopped() {
+		return "stopped"
+	} else {
+		return "dead"
+	}
+}
