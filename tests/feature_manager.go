@@ -41,6 +41,8 @@ func NewFeatureManager(ctx context.Context) (*FeatureManager, error) {
 
 			if len(serverControlContainers) > 0 {
 				fm.containerId = serverControlContainers[0].ID
+			} else {
+				return fmt.Errorf("can't find the container")
 			}
 
 			return nil
