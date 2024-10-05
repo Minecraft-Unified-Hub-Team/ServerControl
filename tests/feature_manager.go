@@ -46,7 +46,7 @@ func NewFeatureManager(ctx context.Context) (*FeatureManager, error) {
 
 			return nil
 		},
-		StepOptions[DEFAULT_TIMEOUT].(int64),
+		StepOptions[FIRST_CONTAINER_WAIT].(int64),
 	)
 
 	return fm, err
