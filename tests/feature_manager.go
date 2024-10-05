@@ -14,34 +14,33 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 	docker_client "github.com/docker/docker/client"
 )
 
 func NewFeatureManager(ctx context.Context) (*FeatureManager, error) {
 	fm := &FeatureManager{}
-	cli, err := docker_client.NewClientWithOpts(docker_client.FromEnv)
+	cli, err := docker_client.NewClientWithOpts(docker_client.FromEnv, docker_client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
-	cli.NegotiateAPIVersion(ctx)
 	fm.cli = cli
+
+	filterArgs := filters.NewArgs()
+	filterArgs.Add("label", "app=server_control")
 
 	err = RetryFunction(
 		func() error {
-			allContainers, err := cli.ContainerList(ctx, container.ListOptions{})
+			serverControlContainers, err := cli.ContainerList(ctx, container.ListOptions{
+				Filters: filterArgs,
+				All:     true,
+			})
 			if err != nil {
 				return err
 			}
 
-			imageName := StepOptions[CONTAINER_NAME].(string)
-			for _, container := range allContainers {
-				if container.Image == imageName {
-					fm.containerId = container.ID
-					break
-				}
-			}
-			if len(fm.containerId) == 0 {
-				return fmt.Errorf("can't find container")
+			if len(serverControlContainers) > 0 {
+				fm.containerId = serverControlContainers[0].ID
 			}
 
 			return nil
