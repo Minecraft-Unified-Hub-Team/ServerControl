@@ -2,11 +2,13 @@ package tests
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/api"
 	"github.com/avast/retry-go"
+	"github.com/cucumber/godog"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -110,14 +112,17 @@ func (fm *FeatureManager) iConnectToServiceControl(ctx context.Context) (context
 	return ctx, nil
 }
 
-func (fm *FeatureManager) iGetServerState(ctx context.Context, checkState api.State) (context.Context, error) {
+func (fm *FeatureManager) iGetServerState(ctx context.Context, expectedStateJSON *godog.DocString) (context.Context, error) {
+	expectedResp := &api.StateResponse{}
+	json.Unmarshal([]byte(expectedStateJSON.Content), expectedResp.State)
+
 	resp, err := fm.healthServiceClient.GetState(ctx, &api.StateRequest{})
 	if err != nil {
 		fm.lastError = err
 		return ctx, fm.lastError
 	}
-	if checkState != resp.State {
-		fm.lastError = fmt.Errorf("get {%s} state, but {%s} state was expected", resp.State, checkState)
+	if expectedResp.State != resp.State {
+		fm.lastError = fmt.Errorf("get {%v} state, but {%v} state was expected", resp.State, expectedResp.State)
 		return ctx, fm.lastError
 	}
 	return ctx, nil

@@ -16,5 +16,10 @@ Feature: Start server
         Then I have no errors
 
     Scenario: Server has "alive" state
-        When I get server state "alive"
+        When I get server state 
+        """
+        {
+        "State": "1"
+        }
+        """
         Then I have no errors
