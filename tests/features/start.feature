@@ -1,10 +1,12 @@
 Feature: Start server
     Scenario: I connect to server control
+        Given ServerControl is up
+        And I have no errors
         When I connect to service control
         Then I have no errors
 
     Scenario: Ping works
-        And I ping to the server
+        When I ping to the server
         Then I have no errors
 
     Scenario: I can install server
