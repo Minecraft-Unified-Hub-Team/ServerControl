@@ -17,9 +17,9 @@ func (l logWriterType) Write(p []byte) (n int, err error) {
 
 func TestFeatures(t *testing.T) {
 	logrus.SetOutput(logWriterType{t: t})
-	fm, err := NewFeatureManager()
+	fm, err := NewFeatureManager(context.Background())
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Panic(err)
 	}
 
 	suite := godog.TestSuite{
@@ -27,9 +27,10 @@ func TestFeatures(t *testing.T) {
 			InitializeScenario(fm, sc)
 		},
 		Options: &godog.Options{
-			Format:   "pretty",
-			Paths:    []string{"features"},
-			TestingT: t,
+			Format:        "pretty",
+			Paths:         []string{"features"},
+			TestingT:      t,
+			StopOnFailure: true,
 		},
 	}
 	t.Cleanup(func() {
@@ -41,6 +42,8 @@ func TestFeatures(t *testing.T) {
 }
 
 func InitializeScenario(fm *FeatureManager, sc *godog.ScenarioContext) {
+	sc.Step(`^ServerControl is up$`, fm.serverControlIsUp)
+
 	sc.Step(`^I connect to service control$`, fm.iConnectToServiceControl)
 
 	sc.Step(`^I install "([^"]*)" server version$`, fm.iInstallServer)
@@ -50,6 +53,9 @@ func InitializeScenario(fm *FeatureManager, sc *godog.ScenarioContext) {
 	sc.Step(`^I ping to the server$`, fm.iPingToTheServer)
 	sc.Step(`^I get server state "([^"]*)"$`, fm.iGetServerState)
 
-	sc.Step(`^I have an error$`, fm.iHaveAnError)
+	sc.Step(`^I have the error "([^"]*)"$`, fm.iHaveAnError)
 	sc.Step(`^I have no errors$`, fm.iHaveNoErrors)
+
+	sc.Step(`^I set the option "([^"]*)" with value "([^"]*)"$`, fm.iSetOption)
+	sc.Step(`^option "([^"]*)" equal to "([^"]*)"$`, fm.optionEqualTo)
 }
