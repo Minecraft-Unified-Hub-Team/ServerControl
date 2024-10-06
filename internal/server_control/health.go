@@ -24,11 +24,7 @@ func (sch *ServerControlHandler) Ping(ctx context.Context, req *api.PingRequest)
 func (sch *ServerControlHandler) GetState(ctx context.Context, req *api.StateRequest) (*api.StateResponse, error) {
 	var err error = nil
 
-	stateString, err := sch.healthService.GetState(context.Background(), sch.actionService.State(ctx))
-	if err != nil {
-		logrus.Debug(err)
-		return nil, err
-	}
+	state := sch.healthService.GetState(ctx, sch.actionService.State(ctx))
 
-	return &api.StateResponse{State: stateString}, err
+	return &api.StateResponse{State: state}, err
 }

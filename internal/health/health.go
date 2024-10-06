@@ -3,6 +3,7 @@ package health
 import (
 	"context"
 
+	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/api"
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/utils/mine_state"
 )
 
@@ -18,8 +19,12 @@ func (hs *HealthService) Ping(ctx context.Context) error {
 	return err
 }
 
-func (hs *HealthService) GetState(ctx context.Context, state *mine_state.State) (string, error) {
-	var err error = nil
-
-	return state.String(), err
+func (hs *HealthService) GetState(ctx context.Context, state mine_state.State) api.State {
+	if state == mine_state.Alive {
+		return api.State_Alive
+	} else if state == mine_state.Stopped {
+		return api.State_Stopped
+	} else {
+		return api.State_Dead
+	}
 }

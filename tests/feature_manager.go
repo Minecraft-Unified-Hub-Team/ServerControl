@@ -110,7 +110,7 @@ func (fm *FeatureManager) iConnectToServiceControl(ctx context.Context) (context
 	return ctx, nil
 }
 
-func (fm *FeatureManager) iGetServerState(ctx context.Context, checkState string) (context.Context, error) {
+func (fm *FeatureManager) iGetServerState(ctx context.Context, checkState api.State) (context.Context, error) {
 	resp, err := fm.healthServiceClient.GetState(ctx, &api.StateRequest{})
 	if err != nil {
 		fm.lastError = err

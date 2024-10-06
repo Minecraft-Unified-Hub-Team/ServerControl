@@ -21,13 +21,13 @@ type ActionService struct {
 	aliveCtx context.Context    // context that continues until server is stopped or dead
 	stopCtx  context.CancelFunc // function that cancels server binary execution
 
-	state *mine_state.State // channel that stores state of server
+	syncedState *mine_state.SyncedState // channel that stores state of server
 }
 
 func NewActionService() (*ActionService, error) {
-	currentState, _ := mine_state.NewState(mine_state.Stopped) // TODO set mine_state.Stopped here when install will be completed
+	currentState, _ := mine_state.NewSyncedState(mine_state.Stopped) // TODO set mine_state.Stopped here when install will be completed
 	return &ActionService{
-		state: currentState,
+		syncedState: currentState,
 	}, nil
 }
 
@@ -128,7 +128,7 @@ func (as *ActionService) Start(ctx context.Context) error {
 	var err error = nil
 
 	/* check that server has not been already started */
-	if as.state.IsAlive() {
+	if as.syncedState.IsAlive() {
 		// return err
 		return fmt.Errorf("server has been already started") // TODO verify that we use fmt.Errorf for creating errors
 	}
@@ -147,15 +147,15 @@ func (as *ActionService) Start(ctx context.Context) error {
 
 	/* start server in goroutine */
 	go func() {
-		as.state.Set(mine_state.Alive)
+		as.syncedState.Set(mine_state.Alive)
 		status, err := mine_os.ManagedExecCtx(as.aliveCtx, command, args)
 		if err != nil {
 			logrus.Debugln("get error in managed start:", err)
 		}
 		if status == 1 {
-			as.state.Set(mine_state.Stopped)
+			as.syncedState.Set(mine_state.Stopped)
 		} else {
-			as.state.Set(mine_state.Dead)
+			as.syncedState.Set(mine_state.Dead)
 		}
 	}()
 
@@ -173,6 +173,6 @@ func (as *ActionService) Stop(ctx context.Context) error {
 	return err
 }
 
-func (as *ActionService) State(ctx context.Context) *mine_state.State {
-	return as.state
+func (as *ActionService) State(ctx context.Context) mine_state.State {
+	return as.syncedState.State()
 }

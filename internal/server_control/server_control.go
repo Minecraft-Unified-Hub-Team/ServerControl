@@ -35,11 +35,11 @@ type (
 		Stop(context.Context) error
 		Install(context.Context, string) error
 
-		State(context.Context) *mine_state.State
+		State(context.Context) mine_state.State
 	}
 
 	HealthInterface interface {
-		GetState(context.Context, *mine_state.State) (string, error)
+		GetState(context.Context, mine_state.State) api.State
 		Ping(context.Context) error
 	}
 
