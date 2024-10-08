@@ -68,5 +68,9 @@ func ManagedExecCtx(ctx context.Context, command string, args []string) (int, er
 
 	/* trigger to stop child processes */
 	termChan <- struct{}{}
-	return status, fmt.Errorf(errorFormat, err)
+	if status == 1 {
+		return status, nil
+	} else {
+		return status, fmt.Errorf(errorFormat, err)
+	}
 }

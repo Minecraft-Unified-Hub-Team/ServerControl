@@ -4,45 +4,61 @@ import (
 	"sync"
 )
 
+type State int
+
 const (
-	Alive   = 0
-	Stopped = 1
-	Dead    = 2
+	Alive State = iota
+	Stopped
+	Dead
 )
 
-type State struct {
-	value int
+func (s State) String() string {
+	return [...]string{"Alive", "Stopped", "Dead"}[s]
+}
+
+func (s State) EnumIndex() int {
+	return int(s)
+}
+
+type SyncedState struct {
+	value State
 	mutex sync.Mutex
 }
 
-func NewState(state int) (*State, error) {
+func NewSyncedState(state State) (*SyncedState, error) {
 	var err error = nil
 
-	return &State{
-		value: Stopped,
+	return &SyncedState{
+		value: state,
 	}, err
 }
 
-func (s *State) IsAlive() bool {
+func (s *SyncedState) IsAlive() bool {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	return s.value == Alive
 }
 
-func (s *State) IsStopped() bool {
+func (s *SyncedState) IsStopped() bool {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	return s.value == Stopped
 }
 
-func (s *State) IsDead() bool {
+func (s *SyncedState) IsDead() bool {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	return s.value == Dead
 }
 
-func (s *State) Set(state int) {
+func (s *SyncedState) Set(state State) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	s.value = state
+}
+
+func (s *SyncedState) State() State {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	return s.value
 }

@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/api"
 	"github.com/avast/retry-go"
+	"github.com/cucumber/godog"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -150,6 +152,15 @@ func (fm *FeatureManager) iStartServer(ctx context.Context) (context.Context, er
 	return ctx, nil
 }
 
+func (fm *FeatureManager) iStopServer(ctx context.Context) (context.Context, error) {
+	_, err := fm.actionServiceClient.Stop(context.Background(), &api.StopRequest{})
+	if err != nil {
+		fm.lastError = err
+		return ctx, nil
+	}
+	return ctx, nil
+}
+
 func (fm *FeatureManager) iPingToTheServer(ctx context.Context) (context.Context, error) {
 	err := RetryFunction(
 		func() error {
@@ -199,6 +210,22 @@ func (fm *FeatureManager) iConnectToServiceControl(ctx context.Context) (context
 	fm.actionServiceClient = api.NewActionClient(conn)
 	fm.healthServiceClient = api.NewHealthClient(conn)
 
+	return ctx, nil
+}
+
+func (fm *FeatureManager) iGetServerState(ctx context.Context, expectedStateJSON *godog.DocString) (context.Context, error) {
+	expectedResp := &api.StateResponse{}
+	json.Unmarshal([]byte(expectedStateJSON.Content), expectedResp.State)
+
+	resp, err := fm.healthServiceClient.GetState(ctx, &api.StateRequest{})
+	if err != nil {
+		fm.lastError = err
+		return ctx, nil
+	}
+	if expectedResp.State != resp.State {
+		fm.lastError = fmt.Errorf("get {%v} state, but {%v} state was expected", resp.State, expectedResp.State)
+		return ctx, nil
+	}
 	return ctx, nil
 }
 

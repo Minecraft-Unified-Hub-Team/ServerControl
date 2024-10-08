@@ -13,8 +13,17 @@ message InstallRequest {string version = 1;}
 message InstallResponse {}
 
 /* Health */
+enum State {
+    Alive = 0;
+    Stopped = 1;
+    Dead = 2;
+}
+
 message PingRequest {}
 message PingResponse {}
+
+message StateRequest {}
+message StateResponse {State state = 1;}
 
 /* Config */
 message WriteSettingsRequest {}
@@ -30,6 +39,7 @@ service Action {
 
 service Health {
     rpc Ping(PingRequest) returns (PingResponse) {}
+    rpc GetState(StateRequest) returns (StateResponse) {}
 }
 
 service Config {
