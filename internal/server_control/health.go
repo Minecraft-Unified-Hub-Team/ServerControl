@@ -24,7 +24,7 @@ func (sch *ServerControlHandler) Ping(ctx context.Context, req *api.PingRequest)
 func (sch *ServerControlHandler) GetState(ctx context.Context, req *api.StateRequest) (*api.StateResponse, error) {
 	var err error = nil
 
-	state := sch.healthService.GetState(ctx, sch.actionService.State(ctx))
+	state := sch.healthService.GetState(ctx, sch.actionService.GetState(ctx))
 
 	return &api.StateResponse{State: state}, err
 }

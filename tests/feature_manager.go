@@ -220,11 +220,11 @@ func (fm *FeatureManager) iGetServerState(ctx context.Context, expectedStateJSON
 	resp, err := fm.healthServiceClient.GetState(ctx, &api.StateRequest{})
 	if err != nil {
 		fm.lastError = err
-		return ctx, fm.lastError
+		return ctx, nil
 	}
 	if expectedResp.State != resp.State {
 		fm.lastError = fmt.Errorf("get {%v} state, but {%v} state was expected", resp.State, expectedResp.State)
-		return ctx, fm.lastError
+		return ctx, nil
 	}
 	return ctx, nil
 }

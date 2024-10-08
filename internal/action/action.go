@@ -173,6 +173,6 @@ func (as *ActionService) Stop(ctx context.Context) error {
 	return err
 }
 
-func (as *ActionService) State(ctx context.Context) mine_state.State {
+func (as *ActionService) GetState(ctx context.Context) mine_state.State {
 	return as.syncedState.State()
 }

@@ -13,15 +13,24 @@ Feature: Start server
         When I install "1.20.6-50.1.3" server version
         Then I have no errors
 
+    Scenario: Server has "Stopped" state
+        When I get server state 
+        """
+        {
+          "State": "Stopped"
+        }
+        """
+        Then I have no errors
+
     Scenario: I can start server
         When I start server
         Then I have no errors
 
-    Scenario: Server has "alive" state
+    Scenario: Server has "Alive" state
         When I get server state 
         """
         {
-          "State": "1"
+          "State": "Alive"
         }
         """
         Then I have no errors
