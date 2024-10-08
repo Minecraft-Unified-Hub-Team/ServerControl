@@ -214,8 +214,15 @@ func (fm *FeatureManager) iConnectToServiceControl(ctx context.Context) (context
 }
 
 func (fm *FeatureManager) iGetServerState(ctx context.Context, expectedStateJSON *godog.DocString) (context.Context, error) {
+	jsonMap := map[string]string{}
+	err := json.Unmarshal([]byte(expectedStateJSON.Content), &jsonMap)
+	if err != nil {
+		fm.lastError = err
+		return ctx, nil
+	}
+
 	expectedResp := &api.StateResponse{}
-	json.Unmarshal([]byte(expectedStateJSON.Content), expectedResp.State)
+	expectedResp.State = api.State(api.State_value[jsonMap["State"]])
 
 	resp, err := fm.healthServiceClient.GetState(ctx, &api.StateRequest{})
 	if err != nil {

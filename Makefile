@@ -7,7 +7,7 @@ run:
 integration-tests: proto
 	docker compose up --wait -d --build
 	cd tests
-	go test ./... -count=1
+	go test ./... -count=1 -v
 
 unit-tests:
 	echo "Done"
