@@ -10,7 +10,7 @@ func WriteSettingsConfig(ctx context.Context, pathToDir string, settings map[str
 	var err error = nil
 	var errorFormat string = fmt.Sprintf("mine_settings.WriteSettingsConfig(ctx, %s)", pathToDir) + ": %w"
 
-	file, err := os.OpenFile(pathToDir+"/server.properties", os.o_CREATE|os.O_TRUNC|os.O_WRONLY, 0660)
+	file, err := os.OpenFile(pathToDir+"/server.properties", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0660)
 	if err != nil {
 		return fmt.Errorf(errorFormat, err)
 	}
