@@ -29,8 +29,14 @@ message StateRequest {}
 message StateResponse {State state = 1;}
 
 /* Config */
-message WriteSettingsRequest {}
-message WriteSettingsResponse {}
+message UpdateRequest {
+    // https://minecraft.wiki/w/Server.properties
+
+    optional bool hardcore = 1;
+    optional int32 max_players = 2;
+    optional string motd = 3;
+}
+message UpdateResponse {}
 
 
 /* Services */
@@ -47,5 +53,5 @@ service Health {
 }
 
 service Config {
-    rpc WriteSettings(WriteSettingsRequest) returns (WriteSettingsResponse) {}
+    rpc Update(UpdateRequest) returns (UpdateResponse) {}
 }

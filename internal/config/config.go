@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Minecraft-Unified-Hub-Team/ServerControl/utils/mine_settings"
 	"github.com/shirou/gopsutil/v3/mem"
 )
 
@@ -67,8 +68,6 @@ func (cs *ConfigService) WriteJVM(ctx context.Context) error {
 	return err
 }
 
-func (cs *ConfigService) WriteSettings(ctx context.Context) error {
-	var err error = nil
-
-	return err
+func (cs *ConfigService) Update(ctx context.Context, m map[string]string) error {
+	return mine_settings.WriteSettingsConfig(ctx, "/server/", m)
 }
