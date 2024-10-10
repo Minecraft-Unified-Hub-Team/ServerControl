@@ -12,7 +12,7 @@ func (sch *ServerControlHandler) Start(ctx context.Context, req *api.StartReques
 
 	logrus.Debug(req)
 
-	err = sch.actionService.Start(context.Background())
+	err = sch.actionService.Start(ctx)
 	if err != nil {
 		logrus.Debug(err)
 		return nil, err
@@ -26,7 +26,7 @@ func (sch *ServerControlHandler) Stop(ctx context.Context, req *api.StopRequest)
 
 	logrus.Debug(req)
 
-	err = sch.actionService.Stop(context.Background())
+	err = sch.actionService.Stop(ctx)
 	if err != nil {
 		logrus.Debug(err)
 		return nil, err
@@ -40,23 +40,43 @@ func (sch *ServerControlHandler) Install(ctx context.Context, req *api.InstallRe
 
 	logrus.Debug(req)
 
-	err = sch.actionService.Install(context.Background(), req.Version)
+	err = sch.actionService.Install(ctx, req.Version)
 	if err != nil {
 		logrus.Debug(err)
 		return nil, err
 	}
 
-	err = sch.configService.WriteEula(context.Background())
+	err = sch.configService.WriteEula(ctx)
 	if err != nil {
 		logrus.Debug(err)
 		return nil, err
 	}
 
-	err = sch.configService.WriteJVM(context.Background())
+	err = sch.configService.WriteJVM(ctx)
 	if err != nil {
 		logrus.Debug(err)
 		return nil, err
 	}
 
 	return &api.InstallResponse{}, err
+}
+
+func (sch *ServerControlHandler) Uninstall(ctx context.Context, req *api.UninstallRequest) (*api.UninstallResponse, error) {
+	var err error = nil
+
+	logrus.Debug(req)
+
+	err = sch.actionService.Stop(ctx)
+	if err != nil {
+		logrus.Debug(err)
+		return nil, err
+	}
+
+	err = sch.actionService.Uninstall(ctx)
+	if err != nil {
+		logrus.Debug(err)
+		return nil, err
+	}
+
+	return &api.UninstallResponse{}, err
 }

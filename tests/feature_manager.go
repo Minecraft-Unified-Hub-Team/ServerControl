@@ -90,7 +90,16 @@ func (fm *FeatureManager) serverControlIsUp(ctx context.Context) (context.Contex
 }
 
 func (fm *FeatureManager) iInstallServer(ctx context.Context, TestServerVersion string) (context.Context, error) {
-	_, err := fm.actionServiceClient.Install(context.Background(), &api.InstallRequest{Version: TestServerVersion})
+	_, err := fm.actionServiceClient.Install(ctx, &api.InstallRequest{Version: TestServerVersion})
+	if err != nil {
+		fm.lastError = err
+		return ctx, nil
+	}
+	return ctx, nil
+}
+
+func (fm *FeatureManager) iUninstallServer(ctx context.Context) (context.Context, error) {
+	_, err := fm.actionServiceClient.Uninstall(ctx, &api.UninstallRequest{})
 	if err != nil {
 		fm.lastError = err
 		return ctx, nil
@@ -144,7 +153,7 @@ func (fm *FeatureManager) optionEqualTo(ctx context.Context, OptionName string, 
 }
 
 func (fm *FeatureManager) iStartServer(ctx context.Context) (context.Context, error) {
-	_, err := fm.actionServiceClient.Start(context.Background(), &api.StartRequest{})
+	_, err := fm.actionServiceClient.Start(ctx, &api.StartRequest{})
 	if err != nil {
 		fm.lastError = err
 		return ctx, nil
@@ -153,7 +162,7 @@ func (fm *FeatureManager) iStartServer(ctx context.Context) (context.Context, er
 }
 
 func (fm *FeatureManager) iStopServer(ctx context.Context) (context.Context, error) {
-	_, err := fm.actionServiceClient.Stop(context.Background(), &api.StopRequest{})
+	_, err := fm.actionServiceClient.Stop(ctx, &api.StopRequest{})
 	if err != nil {
 		fm.lastError = err
 		return ctx, nil

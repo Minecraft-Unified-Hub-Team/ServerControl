@@ -34,6 +34,7 @@ type (
 		Start(context.Context) error
 		Stop(context.Context) error
 		Install(context.Context, string) error
+		Uninstall(context.Context) error
 
 		GetState(context.Context) mine_state.State
 	}

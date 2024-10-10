@@ -47,6 +47,7 @@ func InitializeScenario(fm *FeatureManager, sc *godog.ScenarioContext) {
 	sc.Step(`^I connect to service control$`, fm.iConnectToServiceControl)
 
 	sc.Step(`^I install "([^"]*)" server version$`, fm.iInstallServer)
+	sc.Step(`^I uninstall server$`, fm.iUninstallServer)
 	sc.Step(`^I start server$`, fm.iStartServer)
 	sc.Step(`^I stop server$`, fm.iStopServer)
 

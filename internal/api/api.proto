@@ -12,6 +12,9 @@ message StopResponse {}
 message InstallRequest {string version = 1;}
 message InstallResponse {}
 
+message UninstallRequest {}
+message UninstallResponse {}
+
 /* Health */
 enum State {
     Alive = 0;
@@ -35,6 +38,7 @@ service Action {
     rpc Start(StartRequest) returns (StartResponse) {}
     rpc Stop(StopRequest) returns (StopResponse) {}
     rpc Install(InstallRequest) returns (InstallResponse) {}
+    rpc Uninstall(UninstallRequest) returns (UninstallResponse) {}
 }
 
 service Health {
