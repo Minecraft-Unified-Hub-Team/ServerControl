@@ -12,7 +12,7 @@ func (sch *ServerControlHandler) WriteSettings(ctx context.Context, req *api.Wri
 
 	logrus.Debug(req)
 
-	err = sch.configService.WriteSettings(context.Background())
+	err = sch.configService.WriteSettings(ctx)
 	if err != nil {
 		logrus.Debug(err)
 		return nil, err

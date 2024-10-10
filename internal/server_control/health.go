@@ -12,7 +12,7 @@ func (sch *ServerControlHandler) Ping(ctx context.Context, req *api.PingRequest)
 
 	logrus.Debug(req)
 
-	err = sch.healthService.Ping(context.Background())
+	err = sch.healthService.Ping(ctx)
 	if err != nil {
 		logrus.Debug(err)
 		return nil, err
