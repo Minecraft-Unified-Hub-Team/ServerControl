@@ -114,6 +114,25 @@ func (as *ActionService) Install(ctx context.Context, version string) error {
 	return err
 }
 
+func (as *ActionService) Uninstall(ctx context.Context) error {
+	var err error = nil
+	var errorFormat string = "ActionService.Uninstall(ctx): %w"
+
+	command := "rm"
+	args := append(
+		make([]string, 0),
+		"-rf",
+		serverPath+"/*",
+	)
+
+	err = mine_os.ExecCtx(ctx, command, args)
+	if err != nil {
+		return fmt.Errorf(errorFormat, err)
+	}
+
+	return err
+}
+
 func (as *ActionService) Start(ctx context.Context) error {
 	var err error = nil
 	var errorFormat string = "ActionService.Start(ctx): %w"
