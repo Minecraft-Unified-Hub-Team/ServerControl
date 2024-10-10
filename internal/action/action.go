@@ -25,7 +25,7 @@ type ActionService struct {
 }
 
 func NewActionService() (*ActionService, error) {
-	currentState, _ := mine_state.NewSyncedState(mine_state.Stopped) // TODO set mine_state.Stopped here when install will be completed
+	currentState, _ := mine_state.NewSyncedState(mine_state.Stopped) 
 	return &ActionService{
 		syncedState: currentState,
 	}, nil
@@ -35,10 +35,8 @@ func (as *ActionService) downloadJar(ctx context.Context, version string) error 
 	var err error = nil
 	var errorFormat string = fmt.Sprintf("ActionService.downloadJar(ctx, %s)", version) + ": %w"
 
-	/* configure url address for downloading correct forge jar */
 	url := fmt.Sprintf(baseURL+installerName, version, version)
 
-	/* prepare command and arguments */
 	command := "wget"
 	args := append(
 		make([]string, 0),
@@ -47,7 +45,6 @@ func (as *ActionService) downloadJar(ctx context.Context, version string) error 
 		url,
 	)
 
-	/* dowload jar file */
 	err = mine_os.ExecCtx(ctx, command, args)
 	if err != nil {
 		return fmt.Errorf(errorFormat, err)
@@ -60,7 +57,6 @@ func (as *ActionService) installJar(ctx context.Context, version string) error {
 	var err error = nil
 	var errorFormat string = fmt.Sprintf("ActionService.installJar(ctx, %s)", version) + ": %w"
 
-	/* prepare command and arguments */
 	command := "java"
 	args := append(
 		make([]string, 0),
@@ -70,7 +66,6 @@ func (as *ActionService) installJar(ctx context.Context, version string) error {
 		serverPath,
 	)
 
-	/* configure command for installing */
 	err = mine_os.ExecCtx(ctx, command, args)
 	if err != nil {
 		return fmt.Errorf(errorFormat, err)
@@ -83,14 +78,12 @@ func (as *ActionService) removeJar(ctx context.Context, version string) error {
 	var err error = nil
 	var errorFormat string = fmt.Sprintf("ActionService.removeJar(ctx, %s)", version) + ": %w"
 
-	/* prepare command and arguments */
 	command := "rm"
 	args := append(
 		make([]string, 0),
 		fmt.Sprintf(serverPath+installerName, version),
 	)
 
-	/* remove used jar file */
 	err = mine_os.ExecCtx(ctx, command, args)
 	if err != nil {
 		return fmt.Errorf(errorFormat, err)
@@ -103,19 +96,16 @@ func (as *ActionService) Install(ctx context.Context, version string) error {
 	var err error = nil
 	var errorFormat string = fmt.Sprintf("ActionService.Install(ctx, %s)", version) + ": %w"
 
-	/* download installer for minecraft server with setted version */
 	err = as.downloadJar(ctx, version)
 	if err != nil {
 		return fmt.Errorf(errorFormat, err)
 	}
 
-	/* install server file via java installer for jar files */
 	err = as.installJar(ctx, version)
 	if err != nil {
 		return fmt.Errorf(errorFormat, err)
 	}
 
-	/* remove used jar file after installation */
 	err = as.removeJar(ctx, version)
 	if err != nil {
 		return fmt.Errorf(errorFormat, err)
@@ -126,17 +116,14 @@ func (as *ActionService) Install(ctx context.Context, version string) error {
 
 func (as *ActionService) Start(ctx context.Context) error {
 	var err error = nil
+	var errorFormat string = "ActionService.Start(ctx): %w"
 
-	/* check that server has not been already started */
 	if as.syncedState.IsAlive() {
-		// return err
-		return fmt.Errorf("server has been already started") // TODO verify that we use fmt.Errorf for creating errors
+		return fmt.Errorf(errorFormat, "server has been already started") // TODO verify that we use fmt.Errorf for creating errors
 	}
 
-	/* create aliveness context for server run */
 	as.aliveCtx, as.stopCtx = context.WithCancel(context.Background())
 
-	/* prepare command and arguments */
 	command := "/bin/bash"
 	args := append(
 		make([]string, 0),
@@ -145,32 +132,25 @@ func (as *ActionService) Start(ctx context.Context) error {
 	)
 	logrus.Debugln(command, args)
 
-	/* start server in goroutine */
 	go func() {
 		as.syncedState.Set(mine_state.Alive)
 		status, err := mine_os.ManagedExecCtx(as.aliveCtx, command, args)
 		if err != nil {
 			logrus.Debugln("get error in managed start:", err)
 		}
-		if status == 1 {
+		if status == mine_os.NO_ERROR {
 			as.syncedState.Set(mine_state.Stopped)
 		} else {
 			as.syncedState.Set(mine_state.Dead)
 		}
 	}()
 
-	/* always okay */
 	return err
 }
 
 func (as *ActionService) Stop(ctx context.Context) error {
-	var err error = nil
-
-	/* call cancel context function */
 	as.stopCtx()
-
-	/* always okay */
-	return err
+	return nil
 }
 
 func (as *ActionService) GetState(ctx context.Context) mine_state.State {
