@@ -21,9 +21,7 @@ const (
 type ConfigService struct{}
 
 func NewConfigService() (*ConfigService, error) {
-	var err error = nil
-
-	return &ConfigService{}, err
+	return &ConfigService{}, nil
 }
 
 func (cs *ConfigService) WriteEula(ctx context.Context) error {
@@ -68,6 +66,10 @@ func (cs *ConfigService) WriteJVM(ctx context.Context) error {
 	return err
 }
 
-func (cs *ConfigService) Update(ctx context.Context, m map[string]string) error {
-	return mine_settings.WriteSettingsConfig(ctx, "/server/", m)
+func (cs *ConfigService) WriteSettings(ctx context.Context, m map[string]string) error {
+	return mine_settings.WriteSettingsConfig(ctx, "/server", m)
+}
+
+func (cs *ConfigService) ReadSettings(ctx context.Context) (map[string]string, error) {
+	return mine_settings.ReadSettingsConfig(ctx, "/server")
 }

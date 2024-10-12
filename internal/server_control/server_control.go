@@ -47,6 +47,7 @@ type (
 	ConfigInterface interface {
 		WriteEula(context.Context) error
 		WriteJVM(context.Context) error
-		Update(context.Context, map[string]string) error
+		WriteSettings(context.Context, map[string]string) error
+		ReadSettings(context.Context) (map[string]string, error)
 	}
 )

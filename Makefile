@@ -10,7 +10,7 @@ integration-tests: proto
 	go test ./... -count=1 -v
 
 unit-tests:
-	echo "Done"
+	go test internal/...
 
 cleanup:
 	docker compose down
