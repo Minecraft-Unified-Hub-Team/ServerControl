@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 )
@@ -44,14 +43,14 @@ func ReadSettingsConfig(ctx context.Context, pathToDir string) (map[string]strin
 	for scanner.Scan() && scanner.Text() != "" {
 		parts := strings.Split(scanner.Text(), "=")
 		if len(parts) < 2 {
-			return nil, fmt.Errorf("config line bad formatted %s", scanner.Text())
+			return nil, fmt.Errorf(errorFormat, fmt.Errorf("config line bad formatted %s", scanner.Text()))
 		}
 		key, value := parts[0], parts[1]
 		m[key] = value
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf(errorFormat, fmt.Errorf("something went wrong while reading the file: %s", err))
 	}
 
 	return m, err
