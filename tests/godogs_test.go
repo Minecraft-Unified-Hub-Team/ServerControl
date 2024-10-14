@@ -59,4 +59,7 @@ func InitializeScenario(fm *FeatureManager, sc *godog.ScenarioContext) {
 
 	sc.Step(`^I set the option "([^"]*)" with value "([^"]*)"$`, fm.iSetOption)
 	sc.Step(`^option "([^"]*)" equal to "([^"]*)"$`, fm.optionEqualTo)
+
+	sc.Step(`^I set the config to$`, fm.iSetTheConfigTo)
+	sc.Step(`^the config equal to$`, fm.theCofigEqualTo)
 }
