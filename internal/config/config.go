@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Minecraft-Unified-Hub-Team/ServerControl/utils/mine_settings"
 	"github.com/shirou/gopsutil/v3/mem"
 )
 
@@ -20,9 +21,7 @@ const (
 type ConfigService struct{}
 
 func NewConfigService() (*ConfigService, error) {
-	var err error = nil
-
-	return &ConfigService{}, err
+	return &ConfigService{}, nil
 }
 
 func (cs *ConfigService) WriteEula(ctx context.Context) error {
@@ -67,8 +66,10 @@ func (cs *ConfigService) WriteJVM(ctx context.Context) error {
 	return err
 }
 
-func (cs *ConfigService) WriteSettings(ctx context.Context) error {
-	var err error = nil
+func (cs *ConfigService) WriteSettings(ctx context.Context, m map[string]string) error {
+	return mine_settings.WriteSettingsConfig(ctx, "/server", m)
+}
 
-	return err
+func (cs *ConfigService) ReadSettings(ctx context.Context) (map[string]string, error) {
+	return mine_settings.ReadSettingsConfig(ctx, "/server")
 }

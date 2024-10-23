@@ -58,6 +58,7 @@ func NewFeatureManager(ctx context.Context) (*FeatureManager, error) {
 type FeatureManager struct {
 	actionServiceClient api.ActionClient
 	healthServiceClient api.HealthClient
+	configServiceClient api.ConfigClient
 
 	cli         *docker_client.Client
 	containerId string
@@ -218,6 +219,7 @@ func (fm *FeatureManager) iConnectToServiceControl(ctx context.Context) (context
 
 	fm.actionServiceClient = api.NewActionClient(conn)
 	fm.healthServiceClient = api.NewHealthClient(conn)
+	fm.configServiceClient = api.NewConfigClient(conn)
 
 	return ctx, nil
 }
@@ -242,6 +244,45 @@ func (fm *FeatureManager) iGetServerState(ctx context.Context, expectedStateJSON
 		fm.lastError = fmt.Errorf("get {%v} state, but {%v} state was expected", resp.State, expectedResp.State)
 		return ctx, nil
 	}
+	return ctx, nil
+}
+
+func (fm *FeatureManager) iSetTheConfigTo(ctx context.Context, configString *godog.DocString) (context.Context, error) {
+	var config *api.MinecraftConfig
+	err := json.Unmarshal([]byte(configString.Content), &config)
+	if err != nil {
+		fm.lastError = err
+		return ctx, nil
+	}
+
+	_, err = fm.configServiceClient.Update(ctx, &api.UpdateConfigRequest{Config: config})
+	if err != nil {
+		fm.lastError = err
+		return ctx, nil
+	}
+
+	return ctx, nil
+}
+
+func (fm *FeatureManager) theCofigEqualTo(ctx context.Context, expectedConfigString *godog.DocString) (context.Context, error) {
+	var expectedConfig *api.MinecraftConfig
+	err := json.Unmarshal([]byte(expectedConfigString.Content), &expectedConfig)
+	if err != nil {
+		fm.lastError = err
+		return ctx, nil
+	}
+
+	resp, err := fm.configServiceClient.Get(ctx, &api.GetConfigRequest{})
+	if err != nil {
+		fm.lastError = err
+		return ctx, nil
+	}
+
+	if !reflect.DeepEqual(resp.Config, expectedConfig) {
+		fm.lastError = err
+		return ctx, nil
+	}
+
 	return ctx, nil
 }
 

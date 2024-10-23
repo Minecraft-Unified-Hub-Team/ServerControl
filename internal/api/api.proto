@@ -29,8 +29,21 @@ message StateRequest {}
 message StateResponse {State state = 1;}
 
 /* Config */
-message WriteSettingsRequest {}
-message WriteSettingsResponse {}
+message MinecraftConfig {
+    optional bool hardcore = 1;
+    optional int32 max_players = 2 [json_name = "max-players"];
+    optional string motd = 3;
+}
+
+message UpdateConfigRequest {
+    MinecraftConfig config = 1;
+}
+message UpdateConfigResponse {}
+
+message GetConfigRequest {}
+message GetConfigResponse {
+    MinecraftConfig config = 1;
+}
 
 
 /* Services */
@@ -47,5 +60,6 @@ service Health {
 }
 
 service Config {
-    rpc WriteSettings(WriteSettingsRequest) returns (WriteSettingsResponse) {}
+    rpc Update(UpdateConfigRequest) returns (UpdateConfigResponse) {}
+    rpc Get(GetConfigRequest) returns (GetConfigResponse) {}
 }
