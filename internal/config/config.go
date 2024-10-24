@@ -16,6 +16,7 @@ const (
 	jvmConfig   = "/user_jvm_args.txt"
 
 	bytesInGB = 1024 * 1024 * 1024
+	bytesInMB = 1024 * 1024
 )
 
 type ConfigService struct{}
@@ -57,8 +58,8 @@ func (cs *ConfigService) WriteJVM(ctx context.Context) error {
 		return fmt.Errorf(errorFormat, err)
 	}
 
-	maxMemory := int(v.Total / bytesInGB)
-	_, err = jvmFile.WriteString(fmt.Sprintf("-Xmx%dG", maxMemory))
+	maxMemory := int(v.Total / bytesInMB)
+	_, err = jvmFile.WriteString(fmt.Sprintf("-Xmx%dM", maxMemory))
 	if err != nil {
 		return fmt.Errorf(errorFormat, err)
 	}
