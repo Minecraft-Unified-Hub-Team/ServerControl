@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/utils/mine_os"
-	"github.com/Minecraft-Unified-Hub-Team/ServerControl/utils/mine_state"
 	"github.com/sirupsen/logrus"
 )
 
@@ -20,15 +19,10 @@ const (
 type ActionService struct {
 	aliveCtx context.Context    // context that continues until server is stopped or dead
 	stopCtx  context.CancelFunc // function that cancels server binary execution
-
-	syncedState *mine_state.SyncedState // channel that stores state of server
 }
 
 func NewActionService() (*ActionService, error) {
-	currentState, _ := mine_state.NewSyncedState(mine_state.Stopped) 
-	return &ActionService{
-		syncedState: currentState,
-	}, nil
+	return &ActionService{}, nil
 }
 
 func (as *ActionService) downloadJar(ctx context.Context, version string) error {
@@ -137,10 +131,6 @@ func (as *ActionService) Start(ctx context.Context) error {
 	var err error = nil
 	var errorFormat string = "ActionService.Start(ctx): %w"
 
-	if as.syncedState.IsAlive() {
-		return fmt.Errorf(errorFormat, "server has been already started") // TODO verify that we use fmt.Errorf for creating errors
-	}
-
 	as.aliveCtx, as.stopCtx = context.WithCancel(context.Background())
 
 	command := "/bin/bash"
@@ -152,15 +142,9 @@ func (as *ActionService) Start(ctx context.Context) error {
 	logrus.Debugln(command, args)
 
 	go func() {
-		as.syncedState.Set(mine_state.Alive)
-		status, err := mine_os.ManagedExecCtx(as.aliveCtx, command, args)
+		_, err := mine_os.ManagedExecCtx(as.aliveCtx, command, args)
 		if err != nil {
 			logrus.Debugln("get error in managed start:", err)
-		}
-		if status == mine_os.NO_ERROR {
-			as.syncedState.Set(mine_state.Stopped)
-		} else {
-			as.syncedState.Set(mine_state.Dead)
 		}
 	}()
 
@@ -170,8 +154,4 @@ func (as *ActionService) Start(ctx context.Context) error {
 func (as *ActionService) Stop(ctx context.Context) error {
 	as.stopCtx()
 	return nil
-}
-
-func (as *ActionService) GetState(ctx context.Context) mine_state.State {
-	return as.syncedState.State()
 }

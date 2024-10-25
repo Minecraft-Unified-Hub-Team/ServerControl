@@ -12,6 +12,8 @@ func (sch *ServerControlHandler) Start(ctx context.Context, req *api.StartReques
 
 	logrus.Debug(req)
 
+	// TODO check that server has not been already started
+
 	err = sch.actionService.Start(ctx)
 	if err != nil {
 		logrus.Debug(err)
