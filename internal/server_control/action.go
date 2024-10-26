@@ -2,6 +2,7 @@ package server_control
 
 import (
 	"context"
+	"time"
 
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/api"
 	"github.com/sirupsen/logrus"
@@ -23,7 +24,7 @@ func (sch *ServerControlHandler) Start(ctx context.Context, req *api.StartReques
 		return nil, err
 	}
 
-	err = sch.healthService.Start(ctx, req.RefreshTime)
+	err = sch.healthService.Start(ctx, time.Duration(req.RefreshTime)*time.Second)
 	if err != nil {
 		sch.actionService.Stop(ctx)
 		logrus.Debug(err)
