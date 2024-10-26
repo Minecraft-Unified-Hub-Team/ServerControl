@@ -2,7 +2,37 @@
 // This package is strictly compliant with the following documentation : https://wiki.vg/Server_List_Ping.
 package mine_ping
 
-import "errors"
+import (
+	"context"
+	"errors"
+	"fmt"
+	"os"
+	"strconv"
+
+	"github.com/Minecraft-Unified-Hub-Team/ServerControl/utils/mine_settings"
+)
+
+func StaticPing(ctx context.Context) (JSON, int, error) {
+	var err error = nil
+	var errorFormat string = "mine_ping.MyPing(ctx): %w"
+
+	hostname, err := os.Hostname()
+	if err != nil {
+		return nil, -1, fmt.Errorf(errorFormat, err)
+	}
+
+	settings, err := mine_settings.ReadSettingsConfig(ctx, "/server")
+	if err != nil {
+		return nil, -1, fmt.Errorf(errorFormat, err)
+	}
+
+	port, err := strconv.Atoi(settings["server-port"])
+	if err != nil {
+		return nil, -1, fmt.Errorf(errorFormat, err)
+	}
+
+	return Ping(hostname, port)
+}
 
 // Ping returns the server list ping infos (JSON-like object), and latency of a minecraft server.
 // If an error occurred at any point of the process, an nil json response, a latency of -1, and a non nil error are returned.

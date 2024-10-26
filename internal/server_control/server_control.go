@@ -2,9 +2,9 @@ package server_control
 
 import (
 	"context"
+	"time"
 
 	"github.com/Minecraft-Unified-Hub-Team/ServerControl/internal/api"
-	"github.com/Minecraft-Unified-Hub-Team/ServerControl/utils/mine_state"
 )
 
 func NewServerControlHandler(
@@ -35,12 +35,13 @@ type (
 		Stop(context.Context) error
 		Install(context.Context, string) error
 		Uninstall(context.Context) error
-
-		GetState(context.Context) mine_state.State
 	}
 
 	HealthInterface interface {
-		GetState(context.Context, mine_state.State) api.State
+		Start(ctx context.Context, refreshTime time.Duration) error
+		Stop(ctx context.Context) error
+
+		GetState(context.Context) api.State
 		Ping(context.Context) error
 	}
 

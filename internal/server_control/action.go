@@ -12,10 +12,20 @@ func (sch *ServerControlHandler) Start(ctx context.Context, req *api.StartReques
 
 	logrus.Debug(req)
 
-	// TODO check that server has not been already started
+	state := sch.healthService.GetState(ctx)
+	if state == api.State_Alive {
+		return &api.StartResponse{}, err
+	}
 
 	err = sch.actionService.Start(ctx)
 	if err != nil {
+		logrus.Debug(err)
+		return nil, err
+	}
+
+	err = sch.healthService.Start(ctx, req.RefreshTime)
+	if err != nil {
+		sch.actionService.Stop(ctx)
 		logrus.Debug(err)
 		return nil, err
 	}
@@ -27,6 +37,12 @@ func (sch *ServerControlHandler) Stop(ctx context.Context, req *api.StopRequest)
 	var err error = nil
 
 	logrus.Debug(req)
+
+	err = sch.healthService.Stop(ctx)
+	if err != nil {
+		logrus.Debug(err)
+		return nil, err
+	}
 
 	err = sch.actionService.Stop(ctx)
 	if err != nil {
