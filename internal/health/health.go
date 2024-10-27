@@ -1,9 +1,11 @@
 package health
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"sync"
 	"time"
 
@@ -29,6 +31,25 @@ func fileExists(ctx context.Context, path string) error {
 	}
 
 	return err
+}
+
+func checkMinecraftProcessStarted(ctx context.Context) error {
+	var err error = nil
+	var errorFormat string = "health.checkMinecraftProcessStarted(ctx): %w"
+	var out bytes.Buffer
+
+	cmd := exec.Command("sh", "-c", "ps aux | grep java | grep -v grep")
+	cmd.Stdout = &out
+
+	err = cmd.Run()
+	if err != nil {
+		return fmt.Errorf(errorFormat, err)
+	}
+	if out.Len() > 0 {
+		return err
+	}
+
+	return fmt.Errorf(errorFormat, fmt.Errorf("no any java process started"))
 }
 
 func getMinecraftExitcode(ctx context.Context, path string) (int, error) {
@@ -130,15 +151,14 @@ func (hs *HealthService) Stop(ctx context.Context) error {
 func (hs *HealthService) updateState(ctx context.Context) {
 	var err error = nil
 
-	_, status, _ := mine_ping.StaticPing(ctx)
-	if status != -1 {
-		hs.syncedState.Set(Alive)
-		return
-	}
-
 	err = fileExists(ctx, serverPath+"/"+exitcodeFile)
-	if err != nil { // file does not exist
-		hs.syncedState.Set(Stopped)
+	if err != nil { // file does not exist => server stopped or alive
+		err = checkMinecraftProcessStarted(ctx)
+		if err != nil {
+			hs.syncedState.Set(Stopped)
+			return
+		}
+		hs.syncedState.Set(Alive)
 		return
 	}
 
@@ -153,6 +173,12 @@ func (hs *HealthService) updateState(ctx context.Context) {
 
 func (hs *HealthService) Ping(ctx context.Context) error {
 	var err error = nil
+	var errorFormat string = "HealthService.Ping(ctx): %w"
+
+	_, status, _ := mine_ping.StaticPing(ctx)
+	if status != -1 {
+		return fmt.Errorf(errorFormat, err)
+	}
 
 	return err
 }

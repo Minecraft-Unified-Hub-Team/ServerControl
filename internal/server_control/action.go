@@ -8,6 +8,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	refreshTime = 1
+)
+
 func (sch *ServerControlHandler) Start(ctx context.Context, req *api.StartRequest) (*api.StartResponse, error) {
 	var err error = nil
 
@@ -24,7 +28,7 @@ func (sch *ServerControlHandler) Start(ctx context.Context, req *api.StartReques
 		return nil, err
 	}
 
-	err = sch.healthService.Start(ctx, time.Duration(req.RefreshTime)*time.Second)
+	err = sch.healthService.Start(ctx, time.Duration(refreshTime)*time.Second)
 	if err != nil {
 		sch.actionService.Stop(ctx)
 		logrus.Debug(err)

@@ -225,23 +225,30 @@ func (fm *FeatureManager) iConnectToServiceControl(ctx context.Context) (context
 }
 
 func (fm *FeatureManager) iGetServerState(ctx context.Context, expectedStateJSON *godog.DocString) (context.Context, error) {
-	jsonMap := map[string]string{}
-	err := json.Unmarshal([]byte(expectedStateJSON.Content), &jsonMap)
+	err := RetryFunction(
+		func() error {
+			jsonMap := map[string]string{}
+			err := json.Unmarshal([]byte(expectedStateJSON.Content), &jsonMap)
+			if err != nil {
+				return err
+			}
+
+			expectedResp := &api.StateResponse{}
+			expectedResp.State = api.State(api.State_value[jsonMap["State"]])
+
+			resp, err := fm.healthServiceClient.GetState(ctx, &api.StateRequest{})
+			if err != nil {
+				return err
+			}
+			if expectedResp.State != resp.State {
+				return fmt.Errorf("get {%v} state, but {%v} state was expected", resp.State, expectedResp.State)
+			}
+			return nil
+		},
+		StepOptions[DEFAULT_TIMEOUT].(int64),
+	)
 	if err != nil {
 		fm.lastError = err
-		return ctx, nil
-	}
-
-	expectedResp := &api.StateResponse{}
-	expectedResp.State = api.State(api.State_value[jsonMap["State"]])
-
-	resp, err := fm.healthServiceClient.GetState(ctx, &api.StateRequest{})
-	if err != nil {
-		fm.lastError = err
-		return ctx, nil
-	}
-	if expectedResp.State != resp.State {
-		fm.lastError = fmt.Errorf("get {%v} state, but {%v} state was expected", resp.State, expectedResp.State)
 		return ctx, nil
 	}
 	return ctx, nil
