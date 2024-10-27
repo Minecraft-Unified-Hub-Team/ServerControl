@@ -4,7 +4,7 @@ proto:
 run:
 	go run cmd/main.go
 
-integration-tests: proto
+integration-tests: proto cleanup
 	docker compose up --wait -d --build
 	cd tests
 	go test ./... -count=1 -v

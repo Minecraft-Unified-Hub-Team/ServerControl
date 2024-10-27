@@ -3,7 +3,9 @@ syntax = "proto3";
 option go_package = "./internal/api";
 
 /* Action */
-message StartRequest {}
+message StartRequest {
+    int32 refreshTime = 1;
+}
 message StartResponse {}
 
 message StopRequest {}
@@ -33,6 +35,7 @@ message MinecraftConfig {
     optional bool hardcore = 1;
     optional int32 max_players = 2 [json_name = "max-players"];
     optional string motd = 3;
+    optional int32 server_port = 4 [json_name = "server-port"];
 }
 
 message UpdateConfigRequest {
