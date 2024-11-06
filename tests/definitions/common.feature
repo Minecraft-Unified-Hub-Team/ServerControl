@@ -2,7 +2,7 @@ Feature: Start server
     Scenario: I connect to server control
         Given ServerControl is up
         And I have no errors
-        When I connect to service control
+        When I connect to server control
         Then I have no errors
 
     Scenario: Ping works
@@ -57,26 +57,6 @@ Feature: Start server
         """
         {
           "State": "Alive"
-        }
-        """
-        Then I have no errors
-
-    Scenario: I can set a config
-        When I set the config to
-        """
-        {
-          "hardcore": true,
-          "max-players": 55,
-          "motd": "A server"
-        }
-        """
-        Then I have no errors
-        When the config equal to
-        """
-        {
-          "hardcore": true,
-          "max-players": 55,
-          "motd": "A server"
         }
         """
         Then I have no errors

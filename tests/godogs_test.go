@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/cucumber/godog"
@@ -17,6 +18,11 @@ func (l logWriterType) Write(p []byte) (n int, err error) {
 
 func TestFeatures(t *testing.T) {
 	logrus.SetOutput(logWriterType{t: t})
+	err := compileFeatures("definitions", "patterns", "features")
+	if err != nil {
+		logrus.Panic(err)
+	}
+
 	fm, err := NewFeatureManager(context.Background())
 	if err != nil {
 		logrus.Panic(err)
@@ -34,7 +40,15 @@ func TestFeatures(t *testing.T) {
 		},
 	}
 	t.Cleanup(func() {
-		fm.StepCleanup(context.Background())
+		_, err := fm.StepCleanup(context.Background())
+		if err != nil {
+			logrus.Panic(err)
+		}
+
+		err = os.RemoveAll("features")
+		if err != nil {
+			logrus.Panic(err)
+		}
 	})
 	if suite.Run() != 0 {
 		logrus.Info("non-zero status returned, failed to run feature tests")
@@ -44,7 +58,7 @@ func TestFeatures(t *testing.T) {
 func InitializeScenario(fm *FeatureManager, sc *godog.ScenarioContext) {
 	sc.Step(`^ServerControl is up$`, fm.serverControlIsUp)
 
-	sc.Step(`^I connect to service control$`, fm.iConnectToServiceControl)
+	sc.Step(`^I connect to server control$`, fm.iConnectToServerControl)
 
 	sc.Step(`^I install "([^"]*)" server version$`, fm.iInstallServer)
 	sc.Step(`^I uninstall server$`, fm.iUninstallServer)

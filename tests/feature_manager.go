@@ -207,7 +207,7 @@ func (fm *FeatureManager) iHaveNoErrors(ctx context.Context) (context.Context, e
 	return ctx, nil
 }
 
-func (fm *FeatureManager) iConnectToServiceControl(ctx context.Context) (context.Context, error) {
+func (fm *FeatureManager) iConnectToServerControl(ctx context.Context) (context.Context, error) {
 	conn, err := grpc.NewClient(
 		fmt.Sprintf(":%d", StepOptions[PORT]),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
