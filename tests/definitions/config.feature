@@ -21,4 +21,3 @@ Feature: Start server
         }
         """
         Then I have no errors
-        
